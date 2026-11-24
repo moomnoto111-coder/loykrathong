@@ -183,6 +183,10 @@ footer{margin-top:22px;max-width:62ch;font-size:.84rem;color:var(--muted)}
         <div class="line"><span>กระทงที่คุณลอยที่นี่</span><b><span id="here">0</span> ใบ</b></div>
         <div class="line"><span>จังหวัดที่ลอยแล้ว</span><b><span id="provN">0</span>/77</b></div>
         <div class="track" role="progressbar" aria-label="จังหวัดที่ลอยแล้ว" aria-valuemin="0" aria-valuemax="77" aria-valuenow="0" id="trackBox"><div id="bar"></div></div>
+        <div id="iab" style="display:none;margin:0 0 12px;padding:12px;border:1px solid var(--flame);border-radius:12px;font-size:.9rem;line-height:1.5">
+          <div id="iabTxt"></div>
+          <a class="coin" id="extOpen" href="#" style="display:none;margin-top:10px;text-align:center;text-decoration:none;font-size:.95rem">เปิดด้วยเบราว์เซอร์</a>
+        </div>
         <button class="fb" id="snapBtn" type="button" style="width:100%;border:0;cursor:pointer;font-size:1.05rem;padding:14px">แชร์กระทงของฉันไป Facebook</button>
         <button class="ghost" id="share" type="button" style="padding:10px 14px">คัดลอกข้อความแชร์</button>
       </div>
@@ -1253,6 +1257,25 @@ function setProvince(i,li){
 /* ลิงก์แชร์ Facebook ใช้ที่อยู่เว็บจริงที่เปิดอยู่ ไม่ต้องแก้เมื่อย้ายโดเมน */
 (function(){try{var u=location.href.split('#')[0];if(!/^https?:/.test(u))return;
 document.querySelectorAll('a.fb:not([data-keep])').forEach(function(a){a.href='https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(u)})}catch(e){}})();
+</script>
+<script>
+/* ตรวจเบราว์เซอร์ในแอป (LINE, Facebook, Instagram, Messenger) ที่แชร์ภาพไม่ได้ แล้วพาไปเปิดในเบราว์เซอร์จริง */
+(function(){try{
+  var ua=navigator.userAgent,n=/Line\//i.test(ua)?'LINE':/FBAN|FBAV|FB_IAB|FBIOS/i.test(ua)?'Facebook':/Instagram/i.test(ua)?'Instagram':/Messenger/i.test(ua)?'Messenger':'';
+  if(!n)return;
+  var box=document.getElementById('iab'),txt=document.getElementById('iabTxt'),a=document.getElementById('extOpen');
+  if(!box)return;
+  box.style.display='block';
+  var base=location.href.split('#')[0],android=/Android/i.test(ua);
+  txt.textContent='คุณเปิดเว็บในแอป '+n+' ซึ่งจำกัดการแชร์ภาพ ให้เปิดด้วย '+(android?'Chrome':'Safari หรือ Chrome')+' เพื่อแชร์ไป Facebook ได้ครบ';
+  if(n==='LINE'){
+    a.href=base+(base.indexOf('?')<0?'?':'&')+'openExternalBrowser=1';a.style.display='block';
+  }else if(android&&/^https?:/.test(base)){
+    a.href='intent://'+location.host+location.pathname+location.search+'#Intent;scheme=https;package=com.android.chrome;end';a.style.display='block';
+  }else{
+    txt.textContent+=' (กดปุ่ม ⋯ หรือไอคอนเข็มทิศมุมจอ แล้วเลือก "เปิดใน Safari" หรือ "เปิดในเบราว์เซอร์")';
+  }
+}catch(e){}})();
 </script>
 <script>
 /* ===== สถิติการใช้งาน (Google Analytics 4) =====
